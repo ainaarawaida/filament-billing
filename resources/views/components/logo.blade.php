@@ -1,3 +1,3 @@
 <div class="text-xl">
-  Filament <span class="text-primary-500 font-medium">Starter</span>
+  Sistem <span class="text-primary-500 font-medium">Billing</span>
 </div>

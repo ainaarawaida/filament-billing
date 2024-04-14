@@ -16,7 +16,21 @@
           size="xs"
           url="/admin"
         >
-          {{ Auth::check() ? 'Manage' : 'Login' }}
+          {{ Auth::check() ? 'Manage Admin' : 'Admin Login' }}
+        </x-button>
+        <x-button
+          :icon="Auth::check() ? 'heroicon-o-cog' : 'heroicon-s-user'"
+          size="xs"
+          url="/app/login"
+        >
+          {{ Auth::check() ? 'Manage App' : 'Login' }}
+        </x-button>
+        <x-button
+          :icon="Auth::check() ? 'heroicon-o-cog' : 'heroicon-s-user'"
+          size="xs"
+          url="/app/register"
+        >
+          {{ Auth::check() ? 'Manage App' : 'Register' }}
         </x-button>
       </div>
     </nav>

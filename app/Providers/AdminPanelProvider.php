@@ -2,29 +2,33 @@
 
 namespace App\Providers;
 
-use App\Filament\Auth\Login;
-use Awcodes\Curator\CuratorPlugin;
-use Awcodes\FilamentGravatar\GravatarPlugin;
-use Awcodes\FilamentGravatar\GravatarProvider;
-use BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin;
-use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
-use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
+use App\Models\Team;
 use Filament\Widgets;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Filament\PanelProvider;
+use App\Filament\Auth\Login;
+use Awcodes\Curator\CuratorPlugin;
+use Filament\Support\Colors\Color;
+use Filament\Http\Middleware\Authenticate;
+use Jeffgreco13\FilamentBreezy\BreezyCore;
+use App\Filament\Pages\Tenancy\RegisterTeam;
+use Awcodes\FilamentGravatar\GravatarPlugin;
+use Pboivin\FilamentPeek\FilamentPeekPlugin;
+use Awcodes\FilamentGravatar\GravatarProvider;
+use App\Filament\Pages\Tenancy\EditTeamProfile;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
-use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Jeffgreco13\FilamentBreezy\BreezyCore;
-use Pboivin\FilamentPeek\FilamentPeekPlugin;
+use Filament\Http\Middleware\DisableBladeIconComponents;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin;
+use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
+use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -34,9 +38,16 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            // ->tenantRegistration(RegisterTeam::class)
+            // ->tenantProfile(EditTeamProfile::class)
+            // ->tenant(Team::class, ownershipRelationship: 'teams', slugAttribute: 'slug')
             ->login(Login::class)
+            ->registration()
+            ->passwordReset()
+            ->emailVerification()
             ->profile()
             ->spa()
+            ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
             ->plugins([
                 BreezyCore::make()
@@ -51,14 +62,16 @@ class AdminPanelProvider extends PanelProvider
                     ->pluralLabel('Media Library')
                     ->navigationIcon('heroicon-o-photo')
                     ->navigationGroup('Media')
-                    ->navigationCountBadge(),
-                FilamentExceptionsPlugin::make(),
+                    ->navigationCountBadge()
+                    ->resource(\App\Filament\Resources\CustomMediaResource::class),
+                // FilamentExceptionsPlugin::make(),
                 FilamentJobsMonitorPlugin::make()
                     ->navigationCountBadge()
                     ->navigationGroup('Settings'),
                 FilamentPeekPlugin::make()
                     ->disablePluginStyles(),
                 GravatarPlugin::make(),
+                FilamentSpatieRolesPermissionsPlugin::make(),
             ])
             ->defaultAvatarProvider(GravatarProvider::class)
             ->favicon(asset('/favicon-32x32.png'))

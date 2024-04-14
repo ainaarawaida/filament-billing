@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
-use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\ServiceProvider;
+use Filament\Support\Facades\FilamentView;
+use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
+use BezhanSalleh\FilamentLanguageSwitch\Enums\Placement;
+use Filament\Http\Responses\Auth\Contracts\LoginResponse;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,6 +20,11 @@ class AppServiceProvider extends ServiceProvider
             'panels::head.start',
             fn (): string => '<meta name="robots" content="noindex,nofollow">'
         );
+
+        $this->app->singleton(
+            LoginResponse::class,
+            \App\Http\Responses\Auth\LoginResponse::class
+        );
     }
 
     /**
@@ -24,5 +33,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+        LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
+            $switch
+                ->locales(['ms','en'])
+                ->visible(outsidePanels: true)
+                ->outsidePanelPlacement(Placement::TopRight); // also accepts a closure
+        });
     }
 }
